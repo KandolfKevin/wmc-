@@ -125,7 +125,8 @@ button,
 
 .footer-logo .logo-text {
     font-size: 36px;
-    color: #00ad6a;
+    width: 200px;
+    height: 100px;
 
 }
 
