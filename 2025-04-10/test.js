@@ -107,6 +107,7 @@ function testPersonString() {
     const p = getJohn();
     const exprected = 'John Doe (180cm, 80kg)';
     if (p.toString() !== exprected) {
+        console.log(p.toString);
         throw new Error(`Person.toString() is not ${exprected}`);
     }
 }
