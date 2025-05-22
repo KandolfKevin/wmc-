@@ -1,5 +1,6 @@
 const a = [1, 2, 3, 4, 5];
 const b = [11, 12, 13, 14, 15];
+console.log(a);
 
 a.forEach(function (zahl) {
     if (zahl % 2 == 0) {
@@ -11,4 +12,20 @@ a.forEach(function (zahl) {
     }
 
 })
+
 console.log(a);
+
+
+function hoch() {
+    const hoch2 = a.map(num => (num * num));
+    return (hoch2);
+
+}
+
+
+function wurzel() {
+    const wurzel = a.map(num => Math.sqrt(num))
+    return (wurzel);
+}
+console.log(hoch());
+console.log(wurzel());
