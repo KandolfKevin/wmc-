@@ -1,51 +1,97 @@
 export class Frage {
     constructor(frage, optionen, antwort) {
+        // Prüfe, dass genau drei Argumente übergeben wurden
         if (arguments.length !== 3) {
-            throw new Error('3 args');
+            throw new Error("Constructor benötigt genau 3 Argumente");
         }
-        if (typeof arguments[2] != "string") {
-            throw new Error('3. arg must be string');
+
+        // Prüfe, dass erstes und drittes Argument Strings sind
+        if (typeof frage !== "string" || typeof antwort !== "string") {
+            throw new Error("Erstes und drittes Argument müssen Strings sein");
         }
-        assert(Array.isArray(arguments[1]));
-        assertEquals(typeof arguments[0], "string");
-        assert(arguments[1].includes(arguments[2]));
-        this.frage = arguments[0];
+
+        // Prüfe, dass das zweite Argument ein nicht-leeres Array ist
+        if (!Array.isArray(optionen) || optionen.length === 0) {
+            throw new Error("Zweites Argument muss ein nicht-leeres Array sein");
+        }
+
+        // Prüfe, dass die Antwort in den Optionen enthalten ist
+        if (!optionen.includes(antwort)) {
+            throw new Error("Die Antwort muss in den Optionen enthalten sein");
+        }
+
+        this.frage = frage;
         this.optionen = optionen;
         this.antwort = antwort;
     }
 }
 
 export class Quiz {
-    constructor(arg) {
-        assertEquals(arguments.length, 1);
-        this.fragen = arg.map(pojo => new Frage(
-            pojo.frage,
-            pojo.optionen,
-            pojo.antwort,
-        ));
-    }
-    getFragenbyLength(l) {
-        return this.fragen.filter(frage => frage.frage.length >= l);
-    }
-    getFragenSortedByLength() {
-        return this.fragen.sort((a, b) => a.frage.length - b.frage.length);
-    }
-    getFragenWitchOption(o) {
-        return this.fragen.filter(frage => frage.optionen.includes(o));
-    }
-    getAverageOptions() {
-        let count = 0;
-        count = this.fragen.reduce((acc, frage) => {
-            return acc + frage.optionen.length;
-        }, 0);
-    }
-    getAllOptions() {
-        const s = new Set();
-        this.fragen.forEach(f => {
-            f.optionen.forEach(o => {
-                s.add(o);
-            });
+    constructor(fragenListe) {
+        // Prüfe, dass genau ein Argument übergeben wurde
+        if (arguments.length !== 1) {
+            throw new Error("Constructor benötigt genau 1 Argument");
+        }
+
+        // Optional: Prüfe, dass das Argument ein Array ist
+        if (!Array.isArray(fragenListe)) {
+            throw new Error("Argument muss ein Array von POJOs sein");
+        }
+
+        // Erzeuge aus jedem POJO ein Frage-Objekt
+        this.fragen = fragenListe.map(obj => {
+            // Jedes Objekt muss die Keys "frage", "optionen" und "antwort" haben
+            return new Frage(obj.frage, obj.optionen, obj.antwort);
         });
-        return Array.from(s);
+    }
+
+    /**
+     * Gibt alle Fragen zurück, deren Text mindestens minLength Zeichen hat.
+     * @param {number} minLength
+     * @returns {Frage[]}
+     */
+    getFragenByLength(minLength) {
+        return this.fragen.filter(f => f.frage.length >= minLength);
+    }
+
+    /**
+     * Gibt eine neue, nach Länge sortierte Liste aller Fragen zurück.
+     * Aufsteigend nach frage.length.
+     * @returns {Frage[]}
+     */
+    getFragenSortedByLength() {
+        return [...this.fragen].sort((a, b) => a.frage.length - b.frage.length);
+    }
+
+    /**
+     * Gibt alle Fragen zurück, in deren Optionen die übergebene Option vorkommt.
+     * @param {string} option
+     * @returns {Frage[]}
+     */
+    getFragenWithOption(option) {
+        return this.fragen.filter(f => f.optionen.includes(option));
+    }
+
+    /**
+     * Berechnet die durchschnittliche Anzahl an Optionen über alle Fragen.
+     * @returns {number}
+     */
+    getAverageOptions() {
+        if (this.fragen.length === 0) return 0;
+        const gesamt = this.fragen.reduce((sum, f) => sum + f.optionen.length, 0);
+        return gesamt / this.fragen.length;
+    }
+
+    /**
+     * Gibt ein Array aller eindeutigen Optionen (String) zurück,
+     * über alle Fragen hinweg, ohne Duplikate.
+     * @returns {string[]}
+     */
+    getAllOptions() {
+        const menge = new Set();
+        this.fragen.forEach(f => {
+            f.optionen.forEach(opt => menge.add(opt));
+        });
+        return Array.from(menge);
     }
 }
